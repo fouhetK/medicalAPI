@@ -19,12 +19,12 @@ public class UserAPIController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public UserEntity getPatient(@PathVariable("id") int id) {
+    public UserEntity getUser(@PathVariable("id") int id) {
         return ps.findById(id);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deletePatient(@PathVariable("id") int id) {
+    public void deleteUser(@PathVariable("id") int id) {
         ps.deleteById(id);
     }
 }
