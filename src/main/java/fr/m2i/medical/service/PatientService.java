@@ -25,17 +25,17 @@ public class PatientService {
             throw new InvalidObjectException("Nom du patient invalide");
         } else if (p.getPrenom().length() <= 2) {
             throw new InvalidObjectException("Prenom du patient invalide");
-        } else if (!Pattern.compile(regexPattern).matcher(p.getAdresse()).matches()){
+        } else if (!Pattern.compile(regexPattern).matcher(p.getEmail()).matches()){
+            throw new InvalidObjectException("Email du patient invalide");
+        } else if (p.getAdresse().length() <= 10){
             throw new InvalidObjectException("Adresse du patient invalide");
-        } else if (p.getDatenaissance() == null){
-            throw new InvalidObjectException("Date de naissance du patient invalide");
         }
         try {
-            p.setVilleByVilleId(vs.findById(p.getVilleByVilleId().getId()));
+            p.setVilleId(vs.findById(p.getVilleId().getId()));
         } catch (Exception e) {
             throw new InvalidObjectException("La ville n'est pas valide");
         }
-        if (!p.getVilleByVilleId().getPaysByPaysCode().getCode().equals(p.getPaysByPaysCode().getCode())){
+        if (!p.getVilleId().getPaysByPaysCode().getCode().equals(p.getPaysCode().getCode())){
             throw new InvalidObjectException("La ville ne fait pas partie du pays choisi");
         }
     }
@@ -57,6 +57,18 @@ public class PatientService {
         checkPatient(p);
         try {
             PatientEntity pt = pr.findById(id).get();
+
+            pt.setNom(p.getNom());
+            pt.setPrenom(p.getPrenom());
+            pt.setDatenaissance(p.getDatenaissance());
+            pt.setAdresse(p.getAdresse());
+            pt.setEmail(p.getEmail());
+            pt.setTelephone(p.getTelephone());
+            pt.setVilleId(p.getVilleId());
+            pt.setPaysCode(pt.getVilleId().getPaysByPaysCode());
+
+            pr.save(pt);
+
         } catch (NoSuchElementException e) {
             throw e;
         }

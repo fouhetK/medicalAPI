@@ -10,22 +10,26 @@ public class PatientEntity {
     private int id;
     private String adresse;
     private Date datenaissance;
+    private String email;
+    private String telephone;
     private String nom;
     private String prenom;
-    private PaysEntity paysByPaysCode;
-    private VilleEntity villeByVilleId;
+    private PaysEntity paysCode;
+    private VilleEntity villeId;
 
     public PatientEntity() {
     }
 
-    public PatientEntity(int id, String adresse, Date datenaissance, String nom, String prenom, PaysEntity paysByPaysCode, VilleEntity villeByVilleId) {
+    public PatientEntity(int id, String nom, String prenom, Date dateNaissance, String email, String telephone, String adresse, VilleEntity ville, PaysEntity pays) {
         this.id = id;
-        this.adresse = adresse;
-        this.datenaissance = datenaissance;
         this.nom = nom;
         this.prenom = prenom;
-        this.paysByPaysCode = paysByPaysCode;
-        this.villeByVilleId = villeByVilleId;
+        this.datenaissance = dateNaissance;
+        this.email = email;
+        this.telephone = telephone;
+        this.adresse = adresse;
+        this.villeId = ville;
+        this.paysCode = pays;
     }
 
     @Id
@@ -60,6 +64,26 @@ public class PatientEntity {
     }
 
     @Basic
+    @Column(name = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Basic
+    @Column(name = "telephone")
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    @Basic
     @Column(name = "nom")
     public String getNom() {
         return nom;
@@ -84,31 +108,31 @@ public class PatientEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PatientEntity that = (PatientEntity) o;
-        return id == that.id && Objects.equals(adresse, that.adresse) && Objects.equals(datenaissance, that.datenaissance) && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom);
+        return id == that.id && Objects.equals(adresse, that.adresse) && Objects.equals(datenaissance, that.datenaissance) && Objects.equals(email, that.email) && Objects.equals(telephone, that.telephone) && Objects.equals(nom, that.nom) && Objects.equals(prenom, that.prenom);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, adresse, datenaissance, nom, prenom);
+        return Objects.hash(id, adresse, datenaissance, email, telephone, nom, prenom);
     }
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "pays_code", referencedColumnName = "code")
-    public PaysEntity getPaysByPaysCode() {
-        return paysByPaysCode;
+    public PaysEntity getPaysCode() {
+        return paysCode;
     }
 
-    public void setPaysByPaysCode(PaysEntity paysByPaysCode) {
-        this.paysByPaysCode = paysByPaysCode;
+    public void setPaysCode(PaysEntity paysCode) {
+        this.paysCode = paysCode;
     }
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "ville_id", referencedColumnName = "id")
-    public VilleEntity getVilleByVilleId() {
-        return villeByVilleId;
+    public VilleEntity getVilleId() {
+        return villeId;
     }
 
-    public void setVilleByVilleId(VilleEntity villeByVilleId) {
-        this.villeByVilleId = villeByVilleId;
+    public void setVilleId(VilleEntity villeId) {
+        this.villeId = villeId;
     }
 }

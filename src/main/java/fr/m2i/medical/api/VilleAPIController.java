@@ -75,9 +75,15 @@ public class VilleAPIController {
     @DeleteMapping(value = "/{id}")
     public void deleteVille(@PathVariable("id") int id) {
         try{
-            vs.deleteById(id);
+            VilleEntity v = vs.findById(id);
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Ville introuvable" );
+        }
+
+        try{
+            vs.deleteById(id);
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "La ville est utilisée par au moins un patient" );
         }
     }
 }
