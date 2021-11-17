@@ -23,8 +23,12 @@ public class PatientController {
     private VilleService vs;
 
     @GetMapping("")
-    public String listPatient(Model model){
-        model.addAttribute("patients", ps.findAll());
+    public String listPatient(Model model, HttpServletRequest request ){
+        String search = request.getParameter("search");
+        model.addAttribute("patients", ps.findAll(search));
+        model.addAttribute( "error" , request.getParameter("error") );
+        model.addAttribute( "success" , request.getParameter("success") );
+        model.addAttribute( "search" , search );
         return "patient/list_patient";
     }
 
@@ -35,7 +39,7 @@ public class PatientController {
     }
 
     @PostMapping(value = "/add")
-    public String addPatient( HttpServletRequest request){
+    public String addPatient( HttpServletRequest request, Model model){
 
         PatientEntity p = new PatientEntity();
         populatePatient(p, request);
@@ -43,9 +47,12 @@ public class PatientController {
         try{
             ps.savePatient( p );
         }catch( Exception e ){
-            System.out.println( e.getMessage() );
+            model.addAttribute("patient" , p );
+            model.addAttribute("error" , e.getMessage() );
+            model.addAttribute("villes", vs.findAll());
+            return "ville/add_edit";
         }
-        return "redirect:/patient";
+        return "redirect:/patient?success=true";
     }
 
     @GetMapping(value = "/edit")
@@ -54,13 +61,13 @@ public class PatientController {
             model.addAttribute("patient", ps.findById(Integer.parseInt(request.getParameter("id"))));
             model.addAttribute("villes", vs.findAll());
         } catch (Exception e){
-            System.out.println( e.getMessage() );
+            return "redirect:/patient?error=Patient%20introuvalble";
         }
         return "patient/add_edit";
     }
 
     @PostMapping(value = "/edit")
-    public String editPost( HttpServletRequest request){
+    public String editPost( Model model, HttpServletRequest request){
 
         PatientEntity p = new PatientEntity();
         populatePatient(p, request);
@@ -68,9 +75,14 @@ public class PatientController {
         try{
             ps.updatePatient( Integer.parseInt(request.getParameter("id")), p );
         }catch( Exception e ){
+            p.setId(  -1 ); // hack
             System.out.println( e.getMessage() );
+            model.addAttribute("patient" , p );
+            model.addAttribute("error" , e.getMessage() );
+            model.addAttribute("villes", vs.findAll());
+            return "patient/add_edit";
         }
-        return "redirect:/patient";
+        return "redirect:/patient?success=true";
     }
 
     @GetMapping(value = "/delete")
@@ -78,7 +90,7 @@ public class PatientController {
         try {
             ps.deleteById(Integer.parseInt(request.getParameter("id")));
         } catch (Exception e) {
-            System.out.println( e.getMessage() );
+            return "redirect:/patient?error=Patient%20introuvalble";
         }
         return "redirect:/patient";
     }

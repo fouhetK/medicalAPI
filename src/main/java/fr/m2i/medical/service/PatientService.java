@@ -44,6 +44,16 @@ public class PatientService {
     public Iterable<PatientEntity> findAll() {
         return pr.findAll();
     }
+    public Iterable<PatientEntity> findAll(String nom) {
+        if (nom == null)
+            return findAll();
+        else
+            return findAllByNomContainsOrPrenomContains(nom , nom);
+    }
+
+    public Iterable<PatientEntity> findAllByNomContainsOrPrenomContains(String nom, String prenom){
+        return pr.findAllByNomContainsOrPrenomContains(nom, prenom);
+    }
 
     public PatientEntity findById(int id) {
         return pr.findById(id).get();

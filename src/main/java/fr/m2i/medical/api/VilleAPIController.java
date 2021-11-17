@@ -23,7 +23,7 @@ public class VilleAPIController {
 
     @GetMapping(value = "/", produces = "application/json")
     public Iterable<VilleEntity> getAll(){
-        return vs.findAll();
+        return vs.findAll(null);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")

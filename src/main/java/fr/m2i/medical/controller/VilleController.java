@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/ville")
@@ -27,8 +28,12 @@ public class VilleController {
     private PaysService ps;
 
     @GetMapping("")
-    public String listPatient(Model model){
-        model.addAttribute("villes", vs.findAll());
+    public String listPatient(Model model, HttpServletRequest request ){
+        String search = request.getParameter("search");
+        model.addAttribute("villes", vs.findAll(search));
+        model.addAttribute( "error" , request.getParameter("error") );
+        model.addAttribute( "success" , request.getParameter("success") );
+        model.addAttribute( "search" , search );
         return "ville/list_ville";
     }
 
@@ -39,7 +44,7 @@ public class VilleController {
     }
 
     @PostMapping(value = "/add")
-    public String addPatient( HttpServletRequest request){
+    public String addVille( HttpServletRequest request , Model model){
 
         VilleEntity v = new VilleEntity();
         populateVille(v, request);
@@ -47,9 +52,12 @@ public class VilleController {
         try{
             vs.saveVille( v );
         }catch( Exception e ){
-            System.out.println( e.getMessage() );
+            model.addAttribute("ville" , v );
+            model.addAttribute("error" , e.getMessage() );
+            model.addAttribute("pays" , ps.findAll() );
+            return "ville/add_edit";
         }
-        return "redirect:/ville";
+        return "redirect:/ville?success=true";
     }
 
     @GetMapping(value = "/edit")
@@ -57,14 +65,14 @@ public class VilleController {
         try {
             model.addAttribute("ville", vs.findById(Integer.parseInt(request.getParameter("id"))));
             model.addAttribute("pays", ps.findAll());
-        } catch (Exception e){
-            System.out.println( e.getMessage() );
+        } catch ( NoSuchElementException e ){
+            return "redirect:/ville?error=Ville%20introuvalble";
         }
         return "ville/add_edit";
     }
 
     @PostMapping(value = "/edit")
-    public String editPost( HttpServletRequest request){
+    public String editPost( Model model,  HttpServletRequest request){
 
         VilleEntity v = new VilleEntity();
         populateVille(v, request);
@@ -72,9 +80,13 @@ public class VilleController {
         try{
             vs.updateVille( Integer.parseInt(request.getParameter("id")), v );
         }catch( Exception e ){
-            System.out.println( e.getMessage() );
+            v.setId(  -1 ); // hack
+            model.addAttribute("ville" , v );
+            model.addAttribute("error" , e.getMessage() );
+            model.addAttribute("pays", ps.findAll());
+            return "ville/add_edit";
         }
-        return "redirect:/ville";
+        return "redirect:/ville?success=true";
     }
 
     @GetMapping(value = "/delete")
@@ -82,9 +94,9 @@ public class VilleController {
         try {
             vs.deleteById(Integer.parseInt(request.getParameter("id")));
         } catch (Exception e) {
-            System.out.println( e.getMessage() );
+            return "redirect:/ville?error=Ville%20introuvalble";
         }
-        return "redirect:/ville";
+        return "redirect:/ville?success=true";
     }
 
     private void populateVille(VilleEntity v, HttpServletRequest request){

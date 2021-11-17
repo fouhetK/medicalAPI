@@ -26,8 +26,16 @@ public class VilleService {
         this.vr = vr;
     }
 
+
     public Iterable<VilleEntity> findAll() {
         return vr.findAll();
+    }
+
+    public Iterable<VilleEntity> findAll(String nom) {
+        if (nom == null)
+            return vr.findAll();
+        else
+            return  vr.findAllByNomContainsOrCodePostalContains(nom, nom);
     }
 
     public VilleEntity findById(int id) {

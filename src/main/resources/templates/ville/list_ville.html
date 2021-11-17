@@ -6,9 +6,36 @@
 <header class="mb-5" th:include="~{ fragments/header::#header }"></header>
 
 <main class="container">
+
+    <div class="alert alert-danger" role="alert" th:if="${error != null && error.length() > 0}" th:text="${error}">
+    </div>
+
+    <div class="alert alert-success" role="alert" th:if="${success != null && success.length() > 0}" >
+        Opération effectuée avec succès
+    </div>
+
     <h1>Liste des villes</h1>
 
     <a href="/ville/add" class="btn btn-primary">Ajouter une ville</a>
+
+    <form method="get" action="/ville">
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Rechercher" th:value="${search}" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="form-line mb-4">
+        <label class="form-label">Recherche : </label>
+        <input class="form-control" type="text" id="search_input" name="search" placeholder="nom de ville" th:oninput="|search('ville')|">
+    </div>
 
     <table class="table table-striped">
         <thead>
@@ -22,14 +49,14 @@
         </thead>
 
         <tbody>
-        <tr th:each="ville : ${ villes }">
+        <tr th:each="ville : ${ villes }" class="ville">
             <td th:text="${ ville.id }"></td>
             <td th:text="${ ville.nom }"></td>
             <td th:text="${ ville.codePostal }"></td>
             <td th:text="${ ville.paysByPaysCode.nom }"></td>
             <td>
                 <a class="btn btn-secondary btn-sm" th:href="@{'/ville/edit?id=' + ${ville.id}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                <button class="btn btn-danger btn-sm" th:onclick="|supprimer( ${ville.id} )|"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                <button class="btn btn-danger btn-sm" th:onclick="|supprimer( 'ville', ${ville.id} )|"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
             </td>
         </tr>
         </tbody>
@@ -38,12 +65,5 @@
 
 <footer th:include="~{ fragments/footer::#footer }"></footer>
 
-<script>
-    function supprimer(id){
-        if (confirm("Êtes vous sur ?")){
-            window.location = 'ville/delete?id=' + id;
-        }
-    }
-</script>
 </body>
 </html>
