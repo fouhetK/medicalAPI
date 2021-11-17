@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="fr">
+<head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+<body>
+<header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+<main class="container">
+    <h1 th:if="${ ville == null }">Ajouter une ville</h1>
+    <h1 th:unless="${ ville == null }">Editer une ville</h1>
+    <hr>
+    <form name="monForm" action="" method="post">
+        <div class="form-line mb-4">
+            <label class="form-label">Nom *</label>
+            <input class="form-control" type="text" name="nom" placeholder="Votre nom" required
+                   th:value="${ville?.nom}">
+        </div>
+        <div class="form-line mb-4">
+            <label>Prénom *</label>
+            <input class="form-control" type="text" name="code_postal" placeholder="Code Postal" required
+                   th:value="${ville?.codePostal}">
+        </div>
+
+        <div class="form-line mb-4">
+            <label class="form-label">Ville *</label>
+            <div id="cities-content">
+                <select class="form-select" name="pays" required id="pays">
+                    <option value="" disabled th:selected="${ville?.paysByPaysCode == null}">Sélectionner un pays</option>
+                    <option th:each="p : ${pays}" th:value="${p.code}" th:utext="${p.nom}"
+                            th:selected="${ ville?.paysByPaysCode?.code==p.code}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-line mb-4">
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+
+    </form>
+
+</main>
+
+<footer th:include="~{ fragments/footer::#footer }"></footer>
+
+</body>
+</html>

@@ -5,15 +5,12 @@ import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
-import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/patient")
@@ -28,21 +25,20 @@ public class PatientController {
     @GetMapping("")
     public String listPatient(Model model){
         model.addAttribute("patients", ps.findAll());
-        return "list_patient";
+        return "patient/list_patient";
     }
 
     @GetMapping(value = "/add")
     public String add( Model model ){
         model.addAttribute("villes" , vs.findAll() );
-        return "add_edit";
+        return "patient/add_edit";
     }
 
     @PostMapping(value = "/add")
     public String addPatient( HttpServletRequest request){
 
         PatientEntity p = new PatientEntity();
-
-        populatePatient(p, creatArgsPatient(request));
+        populatePatient(p, request);
 
         try{
             ps.savePatient( p );
@@ -54,16 +50,20 @@ public class PatientController {
 
     @GetMapping(value = "/edit")
     public String edit( Model model, HttpServletRequest request){
-        model.addAttribute("patient", ps.findById(Integer.parseInt(request.getParameter("id"))));
-        model.addAttribute("villes" , vs.findAll() );
-        return "add_edit";
+        try {
+            model.addAttribute("patient", ps.findById(Integer.parseInt(request.getParameter("id"))));
+            model.addAttribute("villes", vs.findAll());
+        } catch (Exception e){
+            System.out.println( e.getMessage() );
+        }
+        return "patient/add_edit";
     }
 
     @PostMapping(value = "/edit")
     public String editPost( HttpServletRequest request){
 
         PatientEntity p = new PatientEntity();
-        populatePatient(p, creatArgsPatient(request));
+        populatePatient(p, request);
 
         try{
             ps.updatePatient( Integer.parseInt(request.getParameter("id")), p );
@@ -83,34 +83,18 @@ public class PatientController {
         return "redirect:/patient";
     }
 
-    private void populatePatient(PatientEntity p, TreeMap<String, String> args){
-        PatientEntity rp = (p == null) ? new PatientEntity() : p;
+    private void populatePatient(PatientEntity p, HttpServletRequest request){
+        p.setNom(request.getParameter("nom"));
+        p.setPrenom(request.getParameter("prenom"));
+        p.setEmail(request.getParameter("email"));
+        p.setAdresse(request.getParameter("adresse"));
+        p.setTelephone(request.getParameter("telephone"));
+        p.setDatenaissance(Date.valueOf(request.getParameter("naissance")));
 
-        p.setNom(args.get("nom"));
-        p.setPrenom(args.get("prenom"));
-        p.setEmail(args.get("email"));
-        p.setAdresse(args.get("adresse"));
-        p.setTelephone(args.get("telephone"));
-        p.setDatenaissance(Date.valueOf(args.get("naissance")));
-
-        VilleEntity v = vs.findById(Integer.parseInt(args.get("ville")));
+        VilleEntity v = vs.findById(Integer.parseInt(request.getParameter("ville")));
 
         p.setVilleId(v);
         p.setPaysCode(v.getPaysByPaysCode());
-    }
-
-    private TreeMap<String, String> creatArgsPatient(HttpServletRequest request){
-        TreeMap<String, String> ret = new TreeMap<>();
-
-        ret.put("nom", request.getParameter("nom"));
-        ret.put("prenom", request.getParameter("prenom"));
-        ret.put("naissance", request.getParameter("naissance"));
-        ret.put("adresse", request.getParameter("adresse"));
-        ret.put("email", request.getParameter("email"));
-        ret.put("telephone", request.getParameter("telephone"));
-        ret.put("ville", request.getParameter("ville"));
-
-        return ret;
     }
 
     public PatientService getPs() {
