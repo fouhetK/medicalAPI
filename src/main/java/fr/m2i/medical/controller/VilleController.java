@@ -1,12 +1,11 @@
 package fr.m2i.medical.controller;
 
-import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.entities.PaysEntity;
 import fr.m2i.medical.entities.VilleEntity;
-import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.PaysService;
 import fr.m2i.medical.service.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Date;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -30,10 +28,18 @@ public class VilleController {
     @GetMapping("")
     public String listPatient(Model model, HttpServletRequest request ){
         String search = request.getParameter("search");
-        model.addAttribute("villes", vs.findAll(search));
+        String page = (request.getParameter("page") == null) ? "1" : request.getParameter("page");
         model.addAttribute( "error" , request.getParameter("error") );
         model.addAttribute( "success" , request.getParameter("success") );
         model.addAttribute( "search" , search );
+
+        Page<VilleEntity> pages = vs.findVilleByPage(Integer.parseInt(page) , search);
+
+        model.addAttribute("nombreVilles", pages.getNumberOfElements());
+        model.addAttribute("nombrePages", pages.getTotalPages());
+        model.addAttribute("villes", pages.getContent());
+        model.addAttribute( "page" , page );
+
         return "ville/list_ville";
     }
 

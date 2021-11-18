@@ -1,9 +1,10 @@
 package fr.m2i.medical.service;
 
-import fr.m2i.medical.entities.UserEntity;
 import fr.m2i.medical.entities.VilleEntity;
-import fr.m2i.medical.repositories.UserRepositories;
 import fr.m2i.medical.repositories.VilleRepositories;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
@@ -35,11 +36,20 @@ public class VilleService {
         if (nom == null)
             return vr.findAll();
         else
-            return  vr.findAllByNomContainsOrCodePostalContains(nom, nom);
+            return  vr.findAllByNomContainsIgnoreCaseOrCodePostalContains(nom, nom);
+    }
+
+    public Page<VilleEntity> findVilleByPage(int page, String nom){
+        Pageable p = PageRequest.of(page - 1, 5);
+
+        if (nom == null)
+            return vr.findAll(p);
+        else
+            return vr.findAllByNomContainsIgnoreCaseOrCodePostalContainsIgnoreCase(p, nom, nom);
     }
 
     public VilleEntity findById(int id) {
-        return vr.findById(id).get();
+        return (VilleEntity) vr.findById(id).get();
     }
 
     public Iterable<VilleEntity> findByPaysByPaysCode(String code) {

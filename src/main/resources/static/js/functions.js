@@ -28,3 +28,14 @@ function load(){
         })
         .catch(error => alert("Erreur : " + error));
 }
+
+setTimeout(function(){
+    let error = document.getElementById("errMessage");
+    let success = document.getElementById("succMessage");
+
+    if (error != null)
+        error.style.display = "none";
+    if (success != null)
+        success.style.display = "none";
+
+}, 5000);

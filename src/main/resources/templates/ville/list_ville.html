@@ -7,13 +7,6 @@
 
 <main class="container">
 
-    <div class="alert alert-danger" role="alert" th:if="${error != null && error.length() > 0}" th:text="${error}">
-    </div>
-
-    <div class="alert alert-success" role="alert" th:if="${success != null && success.length() > 0}" >
-        Opération effectuée avec succès
-    </div>
-
     <h1>Liste des villes</h1>
 
     <a href="/ville/add" class="btn btn-primary">Ajouter une ville</a>
@@ -61,6 +54,14 @@
         </tr>
         </tbody>
     </table>
+    <span class="badge btn-secondary mb-3 float-end" style="align-items: end" th:text="| ${nombreVilles} ville(s) trouvée(s) |"></span>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1 , nombrePages)} " th:classappend="(${page}==${i}) ?'active' : ''">
+                <a class="page-link" th:text="${i}" th:href="@{'/ville?page=' + ${i}}" ></a>
+            </li>
+        </ul>
+    </nav>
 </main>
 
 <footer th:include="~{ fragments/footer::#footer }"></footer>

@@ -1,11 +1,15 @@
 package fr.m2i.medical.repositories;
 
 import fr.m2i.medical.entities.PatientEntity;
-import fr.m2i.medical.entities.VilleEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
-public interface PatientRepositories extends CrudRepository<PatientEntity, Integer> {
+public interface PatientRepositories<T> extends CrudRepository<PatientEntity, Integer> {
 
-    Iterable<PatientEntity> findAllByNomLikeOrPrenomLike(String nom, String prenom);
-    Iterable<PatientEntity> findAllByNomContainsOrPrenomContains(String nom, String prenom);
+    Iterable<PatientEntity> findAllByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(String nom, String prenom);
+
+    Page<T> findAllByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(Pageable pageable, String nom, String prenom);
+
+    Page<T> findAll(Pageable pageable);
 }

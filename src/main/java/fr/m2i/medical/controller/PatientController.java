@@ -5,6 +5,7 @@ import fr.m2i.medical.entities.VilleEntity;
 import fr.m2i.medical.service.PatientService;
 import fr.m2i.medical.service.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +26,18 @@ public class PatientController {
     @GetMapping("")
     public String listPatient(Model model, HttpServletRequest request ){
         String search = request.getParameter("search");
-        model.addAttribute("patients", ps.findAll(search));
+        String page = (request.getParameter("page") == null) ? "1" : request.getParameter("page");
         model.addAttribute( "error" , request.getParameter("error") );
         model.addAttribute( "success" , request.getParameter("success") );
         model.addAttribute( "search" , search );
+
+        Page<PatientEntity> pages = ps.findAllByPage(Integer.parseInt(page) , search);
+
+        model.addAttribute("nombrePatients", pages.getNumberOfElements());
+        model.addAttribute("nombrePages", pages.getTotalPages());
+        model.addAttribute("patients", pages.getContent());
+        model.addAttribute( "page" , page );
+
         return "patient/list_patient";
     }
 
@@ -76,7 +85,6 @@ public class PatientController {
             ps.updatePatient( Integer.parseInt(request.getParameter("id")), p );
         }catch( Exception e ){
             p.setId(  -1 ); // hack
-            System.out.println( e.getMessage() );
             model.addAttribute("patient" , p );
             model.addAttribute("error" , e.getMessage() );
             model.addAttribute("villes", vs.findAll());

@@ -20,5 +20,11 @@
     </div>
   </nav>
 
-  Bienvenue
+  <div class="alert alert-danger" role="alert" id="errMessage" th:if="${param.error}" th:text="${param.error}">
+  </div>
+
+  <div class="alert alert-success" role="alert" id="succMessage" th:if="${param.success}" >
+    Opération effectuée avec succès
+  </div>
+
 </header>

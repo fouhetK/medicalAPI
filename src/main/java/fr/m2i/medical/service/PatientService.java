@@ -2,6 +2,9 @@ package fr.m2i.medical.service;
 
 import fr.m2i.medical.entities.PatientEntity;
 import fr.m2i.medical.repositories.PatientRepositories;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
@@ -44,6 +47,7 @@ public class PatientService {
     public Iterable<PatientEntity> findAll() {
         return pr.findAll();
     }
+
     public Iterable<PatientEntity> findAll(String nom) {
         if (nom == null)
             return findAll();
@@ -51,12 +55,21 @@ public class PatientService {
             return findAllByNomContainsOrPrenomContains(nom , nom);
     }
 
+    public Page<PatientEntity> findAllByPage(int page, String nom) {
+        Pageable p = PageRequest.of(page - 1, 5);
+
+        if (nom == null)
+            return pr.findAll(p);
+        else
+            return pr.findAllByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(p, nom , nom);
+    }
+
     public Iterable<PatientEntity> findAllByNomContainsOrPrenomContains(String nom, String prenom){
-        return pr.findAllByNomContainsOrPrenomContains(nom, prenom);
+        return pr.findAllByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(nom, prenom);
     }
 
     public PatientEntity findById(int id) {
-        return pr.findById(id).get();
+        return (PatientEntity) pr.findById(id).get();
     }
 
     public void deleteById(int id) {
@@ -66,7 +79,7 @@ public class PatientService {
     public void updatePatient(int id, PatientEntity p) throws InvalidObjectException, NoSuchElementException {
         checkPatient(p);
         try {
-            PatientEntity pt = pr.findById(id).get();
+            PatientEntity pt = findById(id);
 
             pt.setNom(p.getNom());
             pt.setPrenom(p.getPrenom());
