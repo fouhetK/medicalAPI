@@ -69,7 +69,7 @@ public class PatientService {
     }
 
     public PatientEntity findById(int id) {
-        return (PatientEntity) pr.findById(id).get();
+        return pr.findById(id).get();
     }
 
     public void deleteById(int id) {

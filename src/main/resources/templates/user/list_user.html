@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="fr" >
+<head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+<body>
+
+<header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+<main class="container">
+
+    <h1>Liste des utilisateurs</h1>
+
+    <a href="/user/add" class="btn btn-primary">Ajouter un utilisateur</a>
+
+    <form method="get" action="/user">
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Rechercher" th:value="${search}" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="form-line mb-4">
+        <label class="form-label">Recherche : </label>
+        <input class="form-control" type="text" id="search_input" name="search" placeholder="nom / username de l'utilisateur" th:oninput="|search('user')|">
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom complet</th>
+            <th>Nom d'utilisateur</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="user : ${ users }" class="user">
+            <td th:text="${ user.id }"></td>
+            <td th:text="${ user.name }"></td>
+            <td th:text="${ user.username }"></td>
+            <td th:text="${ user.email }"></td>
+            <td th:text="${ user.roles == 'ROLE_ADMIN' } ? 'Administrateur' : 'Utilisateur'"></td>
+            <td>
+                <a class="btn btn-secondary btn-sm" th:href="@{'/user/edit?id=' + ${user.id}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <button class="btn btn-danger btn-sm" th:onclick="|supprimer( 'user' , ${user.id} )|"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <span class="badge btn-secondary mb-3 float-end" style="align-items: end" th:text="| ${nombrePatients} patient(s) trouvée(s) |"></span>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1 , nombrePages)} " th:classappend="(${page}==${i}) ?'active' : ''">
+                <a class="page-link" th:text="${i}" th:href="@{'/user?page=' + ${i}}" ></a>
+            </li>
+        </ul>
+    </nav>
+</main>
+
+<footer th:include="~{ fragments/footer::#footer }"></footer>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-<header class="mb-5" xmlns:th="https://www.thymeleaf.org" id="header">
+<header class="mb-5" xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" id="header">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">MEDICOM</a>
@@ -14,9 +14,25 @@
           <li class="nav-item"><a class="nav-link" href="/patient">Patient</a></li>
           <li class="nav-item"><a class="nav-link" href="/rdv">RDV</a></li>
           <li class="nav-item"><a class="nav-link" href="/ville">Ville</a>
+          <li class="nav-item" th:if="${#request.isUserInRole('ADMIN')}"><a class="nav-link" href="/user">Utilisateur</a>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a class="nav-link" href="/user">Utilisateur</a>
           </li>
         </ul>
       </div>
+    </div>
+
+    <div id="user-welcome">
+      Bienvenue <span th:text="${#authentication.getName()}"></span>
+    </div>
+
+    <div class="dropdown">
+      <button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="/images/profil.jpg" class="img-circle">
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" href="#">Profil</a></li>
+        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+      </ul>
     </div>
   </nav>
 

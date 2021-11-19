@@ -49,7 +49,7 @@ public class VilleService {
     }
 
     public VilleEntity findById(int id) {
-        return (VilleEntity) vr.findById(id).get();
+        return vr.findById(id).get();
     }
 
     public Iterable<VilleEntity> findByPaysByPaysCode(String code) {
