@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="fr" >
+<head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+<body>
+
+<header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+<main class="container">
+
+    <h1>Liste des rendez-vous</h1>
+
+    <a href="/rdv/add" class="btn btn-primary">Ajouter un rendez-vous</a>
+
+    <form method="get" action="/rdv">
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Rechercher" th:value="${search}" aria-describedby="button-addon2">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="date" class="form-control" name="datesearch" placeholder="Rechercher" th:value="${datesearch}" aria-describedby="button-addon2">
+                </div>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom & prénom</th>
+            <th>Date</th>
+            <th>Durée</th>
+            <th>Note</th>
+            <th>Type</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="rdv : ${ rdvs }" class="patient">
+            <td th:text="${ rdv.id }"></td>
+            <td th:text="${ rdv.patient.prenom } + ' ' + ${ rdv.patient.nom }"></td>
+            <td th:text="${#dates.format(rdv?.dateheure, 'dd/MM/yyyy hh:mm')}"></td>
+            <td th:text="${ rdv.duree }"></td>
+            <td th:text="${ rdv.note }"></td>
+            <td th:text="${ rdv.type }"></td>
+            <td>
+                <a class="btn btn-secondary btn-sm" th:href="@{'/rdv/edit?id=' + ${rdv.id}}" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <button class="btn btn-danger btn-sm" th:onclick="|supprimer( 'rdv' , ${rdv.id} )|"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <span class="badge btn-secondary mb-3 float-end" style="align-items: end" th:text="| ${nombreRdvs} rendez-vous trouvée(s) |"></span>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1 , nombrePages)} " th:classappend="(${page}==${i}) ?'active' : ''">
+                <a class="page-link" th:text="${i}" th:href="@{'/rdv?page=' + ${i}}" ></a>
+            </li>
+        </ul>
+    </nav>
+</main>
+
+<footer th:include="~{ fragments/footer::#footer }"></footer>
+
+</body>
+</html>

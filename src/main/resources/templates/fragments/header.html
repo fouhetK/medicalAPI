@@ -12,10 +12,9 @@
         <ul class="navbar-nav">
           <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Dashboard</a></li>
           <li class="nav-item"><a class="nav-link" href="/patient">Patient</a></li>
-          <li class="nav-item"><a class="nav-link" href="/rdv">RDV</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a class="nav-link" href="/rdv">RDV</a>
           <li class="nav-item"><a class="nav-link" href="/ville">Ville</a>
           <li class="nav-item" th:if="${#request.isUserInRole('ADMIN')}"><a class="nav-link" href="/user">Utilisateur</a>
-          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a class="nav-link" href="/user">Utilisateur</a>
           </li>
         </ul>
       </div>
@@ -30,7 +29,7 @@
         <img src="/images/profil.jpg" class="img-circle">
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        <li><a class="dropdown-item" href="#">Profil</a></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Profil</a></li>
         <li><a class="dropdown-item" href="/logout">Logout</a></li>
       </ul>
     </div>

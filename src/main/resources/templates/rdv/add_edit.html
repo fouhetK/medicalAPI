@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="fr">
+<head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+<body>
+<header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+<main class="container">
+    <h1 th:if="${ rdv == null }">Ajouter un rendez-vous</h1>
+    <h1 th:unless="${ rdv == null }">Editer un rendez-vous</h1>
+    <hr>
+
+    <div class="alert alert-danger" role="alert" th:if="${error != null && error.length() > 0}" th:text="${error}">
+    </div>
+
+    <form name="monForm" action="" method="post">
+
+        <div class="form-line mb-4">
+            <label class="form-label">Patient *</label>
+            <div id="cities-content">
+                <select class="form-select" name="patient" required id="ville">
+                    <option value="" disabled th:selected="${rdv?.patient == null}">Sélectionner un patient</option>
+                    <option th:each="patient : ${patients}" th:value="${patient.id}" th:utext="${patient.nom} + ' ' + ${patient.prenom} "
+                            th:selected="${ patient.id==rdv?.patient?.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-line mb-4">
+            <label class="form-label">Date et heure *</label>
+            <input class="form-control" type="datetime-local" name="datetime" placeholder="dd/mm/yyyy" required
+                   th:value="|${#dates.format(rdv?.dateheure, 'yyyy-MM-dd')}T${#dates?.format(rdv?.dateheure, 'hh:mm:ss')}|">
+        </div>
+
+        <div class="form-line mb-4">
+            <label class="form-label">Durée *</label>
+            <input class="form-control" type="text" name="duree" placeholder="Durée du rendez-vous" required
+                   th:value="${rdv?.duree}">
+        </div>
+
+        <div class="form-line mb-4">
+            <label class="form-label">Note *</label>
+            <textarea class="form-control" name="note" placeholder="Précision sur le rendez-vous" required
+                      th:value="${rdv?.note}"></textarea>
+        </div>
+
+        <div class="form-line mb-4">
+            <label class="form-label">Type *</label>
+            <input class="form-control" type="text" name="type" placeholder="Type de rendez-vous" required
+                   th:value="${rdv?.type}">
+        </div>
+
+        <div class="form-line mb-4">
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+
+    </form>
+
+</main>
+
+<footer th:include="~{ fragments/footer::#footer }"></footer>
+
+</body>
+</html>

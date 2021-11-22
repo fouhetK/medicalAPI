@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -100,6 +101,35 @@ public class UserController {
             return "redirect:/user?error=Patient%20introuvalble";
         }
         return "redirect:/user";
+    }
+
+    @PostMapping(value = "/profil/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_USER" })
+    public String editProfil(@PathVariable int id , HttpServletRequest request ){
+
+        UserEntity u = new UserEntity();
+        u.setEmail(request.getParameter("email"));
+        u.setUsername(request.getParameter("username"));
+        u.setRoles(request.getParameter("roles"));
+        u.setName(request.getParameter("name"));
+        if (request.getParameter("password") != null && request.getParameter("password") != "")
+            u.setPassword(passwordEncoder.encode(request.getParameter("password")));
+
+        // String username, String email, String roles, String password, String name
+        // Préparation de l'entité à sauvegarderpassword
+        u.setId( id );
+
+        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
+        try{
+            us.editProfil( id, u );
+        }catch( Exception e ){
+            System.out.println( e.getMessage() );
+        }
+
+        // Mettre à jour l'utilisateur ????
+
+
+        return "redirect:/patient?success=true";
     }
 
     private void populateUser(UserEntity u, HttpServletRequest request){

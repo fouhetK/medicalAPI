@@ -55,6 +55,24 @@ public class UserService {
         ur.save(user);
     }
 
+    public void editProfil( int id , UserEntity u) throws NoSuchElementException {
+        try{
+            UserEntity uExistant = ur.findById(id).get();
+
+            uExistant.setEmail( u.getEmail() );
+            uExistant.setName( u.getName() );
+            uExistant.setUsername( u.getUsername() );
+            if (u.getPassword() != null && u.getPassword() != "")
+                uExistant.setPassword(u.getPassword());
+            uExistant.setPhotouser(u.getPhotouser());
+
+            ur.save( uExistant );
+
+        }catch ( NoSuchElementException e ){
+            throw e;
+        }
+    }
+
     public void updateUser(int id, UserEntity u) throws InvalidObjectException, NoSuchElementException {
         checkUser(u);
         try {
@@ -63,7 +81,8 @@ public class UserService {
             ut.setUsername(u.getUsername());
             ut.setEmail(u.getEmail());
             ut.setName(u.getName());
-            ut.setPassword(u.getPassword());
+            if (u.getPassword() != null && u.getPassword() != "")
+                ut.setPassword(u.getPassword());
             ut.setPhotouser(u.getPhotouser());
             ut.setRoles(u.getRoles());
 
