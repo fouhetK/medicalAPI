@@ -9,7 +9,7 @@
     <h1 th:unless="${ user == null }">Editer un utilisateur</h1>
     <hr>
 
-    <form name="monForm" action="" method="post">
+    <form name="monForm" action="" method="post" enctype="multipart/form-data">
         <div id="userForm">
             <div class="form-line mb-4">
                 <label class="form-label">Nom d'utilisateur *</label>

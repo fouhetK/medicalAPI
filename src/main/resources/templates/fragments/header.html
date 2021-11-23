@@ -26,7 +26,7 @@
 
     <div class="dropdown">
       <button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="/images/profil.jpg" class="img-circle">
+        <img th:src="'/images/' + ${#authentication.getPrincipal().getUser().getPhotouser()}" class="img-circle">
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Profil</a></li>

@@ -13,11 +13,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/user")
 @Secured("ROLE_ADMIN")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 5,
+        maxRequestSize = 1024 * 1024 * 5 * 5)
 public class UserController {
 
     @Autowired
@@ -54,7 +62,11 @@ public class UserController {
     public String addUser( HttpServletRequest request, Model model){
 
         UserEntity u = new UserEntity();
-        populateUser(u, request);
+        try {
+            populateUser(u, request);
+        } catch (IOException | ServletException e) {
+            model.addAttribute("error" , e.getMessage() );
+        }
 
         try{
             us.saveUser( u );
@@ -80,7 +92,11 @@ public class UserController {
     public String editPost( Model model, HttpServletRequest request){
 
         UserEntity u = new UserEntity();
-        populateUser(u, request);
+        try {
+            populateUser(u, request);
+        } catch (IOException | ServletException e) {
+            model.addAttribute("error" , e.getMessage() );
+        }
 
         try{
             us.updateUser( Integer.parseInt(request.getParameter("id")), u );
@@ -105,21 +121,17 @@ public class UserController {
 
     @PostMapping(value = "/profil/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_USER" })
-    public String editProfil(@PathVariable int id , HttpServletRequest request ){
+    public String editProfil(Model model, @PathVariable int id , HttpServletRequest request ){
 
         UserEntity u = new UserEntity();
-        u.setEmail(request.getParameter("email"));
-        u.setUsername(request.getParameter("username"));
-        u.setRoles(request.getParameter("roles"));
-        u.setName(request.getParameter("name"));
-        if (request.getParameter("password") != null && request.getParameter("password") != "")
-            u.setPassword(passwordEncoder.encode(request.getParameter("password")));
+        try {
+            populateUser(u, request);
+        } catch (IOException | ServletException e) {
+            model.addAttribute("error" , e.getMessage() );
+        }
 
-        // String username, String email, String roles, String password, String name
-        // Préparation de l'entité à sauvegarderpassword
         u.setId( id );
 
-        // Enregistrement en utilisant la couche service qui gère déjà nos contraintes
         try{
             us.editProfil( id, u );
         }catch( Exception e ){
@@ -128,17 +140,23 @@ public class UserController {
 
         // Mettre à jour l'utilisateur ????
 
-
         return "redirect:/patient?success=true";
     }
 
-    private void populateUser(UserEntity u, HttpServletRequest request){
+    private void populateUser(UserEntity u, HttpServletRequest request) throws ServletException, IOException {
         u.setUsername(request.getParameter("username"));
         u.setEmail(request.getParameter("email"));
         u.setName(request.getParameter("name"));
         if (request.getParameter("password") != null)
             u.setPassword(passwordEncoder.encode(request.getParameter("password")));
-        u.setPhotouser(request.getParameter("photouser"));
         u.setRoles(request.getParameter("role"));
+
+        File uploadDir = new File("src\\main\\resources\\static\\images");
+        if (!uploadDir.exists()) uploadDir.mkdir();
+
+        Part part = request.getPart("photouser");
+        String fileName = part.getSubmittedFileName();
+        u.setPhotouser(fileName);
+        part.write(uploadDir.getAbsolutePath() + File.separator + fileName);
     }
 }

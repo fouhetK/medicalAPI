@@ -17,11 +17,9 @@
                     <h5 class="modal-title" id="staticBackdropLabel">Editer mon profil</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form name="" method="post" th:action="@{'/user/profil/' + ${#authentication.getPrincipal().getUser().getId()}}">
+                <form name="" method="post" th:action="@{'/user/profil/' + ${#authentication.getPrincipal().getUser().getId()}}" enctype="multipart/form-data">
                     <div class="modal-body" th:with="u=${#authentication.getPrincipal().getUser()}">
-
                         <div class="mb-5" th:include="~{ user/add_edit::#userForm( user = ${u} ) }"></div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
